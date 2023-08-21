@@ -22,37 +22,13 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("get-a-todo/{id}")
-    public ResponseEntity<Book> todo(@PathVariable Long id){
-//        Address address = Address.builder()
-//                .id(1l)
-//                .name("Orchid")
-//                .build();
-//        Bank bank = Bank.builder()
-//                .id(1l)
-//                .name("Orchid Bank").build();
-//        Company company = Company.builder()
-//                .id(1l)
-//                .name("Orchid ltd")
-//                .address(address).build();
-//        Hair hair = Hair.builder()
-//                .color("Brown")
-//                .id(1l)
-//                .type("Wooly")
-//                .build();
-//        User user = User.builder()
-//                .company(company)
-//                .bank(bank)
-//                .hair(hair)
-//                .id(1l)
-//                .name("Orchid Daro")
-//                .build();
-//        System.out.println("This  is a sample: "+user);
+    public ResponseEntity<Todo> todo(@PathVariable Long id){
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         HttpEntity httpEntity = new HttpEntity(httpHeaders);
-        restTemplate.exchange("https://dummyjson.com/todos/"+id, HttpMethod.GET, httpEntity, Todo.class);
-        return new ResponseEntity<>(bookService.viewBook(id), HttpStatus.OK);
+        ResponseEntity<Todo> todo = restTemplate.exchange("https://dummyjson.com/todos/"+id, HttpMethod.GET, httpEntity, Todo.class);
+        return todo;
     }
 
 //
