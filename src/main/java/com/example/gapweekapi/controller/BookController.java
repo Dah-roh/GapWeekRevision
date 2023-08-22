@@ -6,11 +6,18 @@ import com.example.gapweekapi.config.ApiConfig;
 import com.example.gapweekapi.model.Book;
 import com.example.gapweekapi.service.BookService;
 import com.example.gapweekapi.service.serviceImpl.BookServiceImpl;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +36,28 @@ public class BookController {
         HttpEntity httpEntity = new HttpEntity(httpHeaders);
         ResponseEntity<Todo> todo = restTemplate.exchange("https://dummyjson.com/todos/"+id, HttpMethod.GET, httpEntity, Todo.class);
         return todo;
+    }
+
+    @GetMapping("get-a-todo/{id}")
+    public ResponseEntity<Todo> todoMono(@PathVariable Long id){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity httpEntity = new HttpEntity(httpHeaders);
+        ResponseEntity<Todo> todo = restTemplate.exchange("https://dummyjson.com/todos/"+id, HttpMethod.GET, httpEntity, Todo.class);
+        return todo;
+    }
+
+    @GetMapping("get-todos")
+    public List<Todo> todos() throws ParseException {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity httpEntity = new HttpEntity(httpHeaders);
+        ResponseEntity<String> todo = restTemplate.exchange("https://dummyjson.com/todos", HttpMethod.GET, httpEntity, String.class);
+        List<Todo> todoList = new ObjectMapper().convertValue(new JSONParser(todo.getBody()).object().get("todos"),
+                new TypeReference<List<Todo>>(){});
+        return todoList;
     }
 
 //

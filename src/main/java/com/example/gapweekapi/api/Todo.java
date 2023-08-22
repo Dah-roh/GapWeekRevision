@@ -1,5 +1,6 @@
 package com.example.gapweekapi.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,8 @@ import lombok.NoArgsConstructor;
 public class Todo {
     private Long id;
     private String todo;
-    private Boolean completed;
+    @JsonProperty("completed")
+    private Boolean haveyouFinished;
     private Long userId;
 
 }
