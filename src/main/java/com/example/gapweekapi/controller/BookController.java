@@ -11,7 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -38,18 +41,13 @@ public class BookController {
         return todo;
     }
 
-    @GetMapping("get-a-todo/{id}")
-    public ResponseEntity<Todo> todoMono(@PathVariable Long id){
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity httpEntity = new HttpEntity(httpHeaders);
-        ResponseEntity<Todo> todo = restTemplate.exchange("https://dummyjson.com/todos/"+id, HttpMethod.GET, httpEntity, Todo.class);
-        return todo;
+    @GetMapping("get-mono-todo/{id}")
+    public Mono<Todo> todoMono(@PathVariable Long id){
+        return WebClient.create("https://dummyjson.com/todos/"+id).get().retrieve().bodyToMono(Todo.class);
     }
 
-    @GetMapping("get-todos")
-    public List<Todo> todos() throws ParseException {
+    @GetMapping("get-todos/{id}")
+    public PagedListHolder<Todo> todos(@PathVariable int id) throws ParseException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -57,7 +55,11 @@ public class BookController {
         ResponseEntity<String> todo = restTemplate.exchange("https://dummyjson.com/todos", HttpMethod.GET, httpEntity, String.class);
         List<Todo> todoList = new ObjectMapper().convertValue(new JSONParser(todo.getBody()).object().get("todos"),
                 new TypeReference<List<Todo>>(){});
-        return todoList;
+        PagedListHolder<Todo> pagedListHolder = new PagedListHolder<>(todoList);
+        pagedListHolder.setPageSize(2);
+        pagedListHolder.setPage(id);
+        pagedListHolder.setMaxLinkedPages(todoList.size());
+        return pagedListHolder;
     }
 
 //
