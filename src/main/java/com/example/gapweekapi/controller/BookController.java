@@ -46,6 +46,14 @@ public class BookController {
         return WebClient.create("https://dummyjson.com/todos/"+id).get().accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(Todo.class);
     }
 
+    @GetMapping("get-all-books/{pageNumber}")
+    public List<Book> allBooks(@PathVariable int pageNumber){
+        PagedListHolder<Book> bookPagedListHolder = new PagedListHolder<Book>(bookService.getAllBooks());
+        bookPagedListHolder.setPageSize(3);
+        bookPagedListHolder.setPage(pageNumber);
+        return bookPagedListHolder.getPageList();
+    }
+
     @GetMapping("get-todos/{id}")
     public List<Todo> todos(@PathVariable int id) throws ParseException {
         RestTemplate restTemplate = new RestTemplate();

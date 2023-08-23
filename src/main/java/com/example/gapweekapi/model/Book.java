@@ -24,7 +24,6 @@ public class Book {
     private Double personalRating;
     @Column(unique = true)
     private String blurb;
-
     public Book (BookDTO bookDTO) {
         this.id = bookDTO.getId();
         this.bookTitle = bookDTO.getBookTitle();
