@@ -47,11 +47,17 @@ public class BookController {
     }
 
     @GetMapping("get-all-books/{pageNumber}")
-    public List<Book> allBooks(@PathVariable int pageNumber){
+    public PaginatedBooks allBooks(@PathVariable int pageNumber){
         PagedListHolder<Book> bookPagedListHolder = new PagedListHolder<Book>(bookService.getAllBooks());
         bookPagedListHolder.setPageSize(3);
         bookPagedListHolder.setPage(pageNumber);
-        return bookPagedListHolder.getPageList();
+
+        return PaginatedBooks.builder()
+                .bookList(bookPagedListHolder.getPageList())
+                .currentPage(bookPagedListHolder.getPage())
+                .pageSize(bookPagedListHolder.getPageSize())
+                .totalPages(bookPagedListHolder.getMaxLinkedPages())
+                .build();
     }
 
     @GetMapping("get-todos/{id}")
