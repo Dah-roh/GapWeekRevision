@@ -43,11 +43,11 @@ public class BookController {
 
     @GetMapping("get-mono-todo/{id}")
     public Mono<Todo> todoMono(@PathVariable Long id){
-        return WebClient.create("https://dummyjson.com/todos/"+id).get().retrieve().bodyToMono(Todo.class);
+        return WebClient.create("https://dummyjson.com/todos/"+id).get().accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(Todo.class);
     }
 
     @GetMapping("get-todos/{id}")
-    public PagedListHolder<Todo> todos(@PathVariable int id) throws ParseException {
+    public List<Todo> todos(@PathVariable int id) throws ParseException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -56,10 +56,10 @@ public class BookController {
         List<Todo> todoList = new ObjectMapper().convertValue(new JSONParser(todo.getBody()).object().get("todos"),
                 new TypeReference<List<Todo>>(){});
         PagedListHolder<Todo> pagedListHolder = new PagedListHolder<>(todoList);
-        pagedListHolder.setPageSize(2);
+        pagedListHolder.setPageSize(5);
         pagedListHolder.setPage(id);
         pagedListHolder.setMaxLinkedPages(todoList.size());
-        return pagedListHolder;
+        return pagedListHolder.getPageList();
     }
 
 //
