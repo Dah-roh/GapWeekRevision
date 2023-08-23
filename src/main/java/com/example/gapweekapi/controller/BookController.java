@@ -55,11 +55,7 @@ public class BookController {
         ResponseEntity<String> todo = restTemplate.exchange("https://dummyjson.com/todos", HttpMethod.GET, httpEntity, String.class);
         List<Todo> todoList = new ObjectMapper().convertValue(new JSONParser(todo.getBody()).object().get("todos"),
                 new TypeReference<List<Todo>>(){});
-        PagedListHolder<Todo> pagedListHolder = new PagedListHolder<>(todoList);
-        pagedListHolder.setPageSize(5);
-        pagedListHolder.setPage(id);
-        pagedListHolder.setMaxLinkedPages(todoList.size());
-        return pagedListHolder.getPageList();
+      return todoList;
     }
 
 //
